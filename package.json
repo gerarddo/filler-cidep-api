@@ -4,12 +4,17 @@
   "description": "Polygon filler app for internal scaffolding project",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
   },
   "author": "Gerardo Mijares",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.18.2",
+    "ejs": "^2.5.7",
+    "express": "^4.16.2",
     "fs": "0.0.1-security",
+    "nodemon": "^1.14.12",
     "save": "^2.3.2"
   }
 }
