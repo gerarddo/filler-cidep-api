@@ -1,5 +1,6 @@
 var express        			= require("express"),
-	app            			= express(),
+    app            			= express(),
+    cors                    = require('cors'),
 	bodyParser     			= require("body-parser");
  	
  	// routes
@@ -8,10 +9,12 @@ var indexRoutes 		= require("./routes/index")
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
+app.use(cors());
 // app.use("/scripts", express.static( __dirname + "/public/scripts"));
 // app.use("/images", express.static( __dirname + "/public/images"));
 
 app.use(indexRoutes);
+
 
 
 
