@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var Cylinder = require("../models/scaffold/Cylinder")
+var Cuboid = require("../models/scaffold/Cuboid")
 var Point = require("../models/Point")
 
 
