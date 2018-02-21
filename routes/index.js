@@ -20,25 +20,33 @@ router.post("/fill", function(req, res){
     // var newCylinder = new Cylinder(r, step, height, heightStep).toCIDEPGcode(new Point(-30, 0 ,0), "F4")
     
     // res.render("index", {fill: true, cylinderGcode: newCylinder})
+
+	let step = 0;
+	let height = 0;
+	let heightStep = 0;
+	let newlyCreated = {};
+
+
+
 	let parameters = JSON.parse(req.body.parameters)
 
 	const polygonCase = parameters.polygonCase
 
 	switch(polygonCase) {
     case "circle":
-		const radius = Number(parameters.radius)
-		const step = Number(parameters.step)
-		const height = Number(parameters.height)
-		const heightStep = Number(parameters.heightStep)
-		var newlyCreated = new Cylinder(radius, step, height, heightStep).toCIDEPGcode(new Point(-30, 0 ,0), "F4")
+		let radius = Number(parameters.radius)
+		step = Number(parameters.step)
+		height = Number(parameters.height)
+		heightStep = Number(parameters.heightStep)
+		newlyCreated = new Cylinder(radius, step, height, heightStep).toCIDEPGcode(new Point(-30, 0 ,0), "F4")
 		res.send(JSON.stringify(newlyCreated));
         break;
     case "cuboid":
-		const side = Number(parameters.side)
-		const step = Number(parameters.step)
-		const height = Number(parameters.height)
-		const heightStep = Number(parameters.heightStep)
-		var newlyCreated = new Cuboid(side, step, height, heightStep).toCIDEPGcode(new Point(-30, 0 ,0), "F4")
+		let side = Number(parameters.side)
+		step = Number(parameters.step)
+		height = Number(parameters.height)
+		heightStep = Number(parameters.heightStep)
+		newlyCreated = new Cuboid(side, step, height, heightStep).toCIDEPGcode(new Point(-30, 0 ,0), "F4")
 		res.send(JSON.stringify(newlyCreated));
         break;
 	}
