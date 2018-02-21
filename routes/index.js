@@ -41,7 +41,7 @@ router.post("/fill", function(req, res){
 		newlyCreated = new Cylinder(radius, step, height, heightStep).toCIDEPGcode(new Point(-30, 0 ,0), "F4")
 		res.send(JSON.stringify(newlyCreated));
         break;
-    case "cuboid":
+    case "square":
 		let side = Number(parameters.side)
 		step = Number(parameters.step)
 		height = Number(parameters.height)
