@@ -21,12 +21,27 @@ router.post("/fill", function(req, res){
     
     // res.render("index", {fill: true, cylinderGcode: newCylinder})
 	let parameters = JSON.parse(req.body.parameters)
-	const radius = Number(parameters.radius)
-	const step = Number(parameters.step)
-	const height = Number(parameters.height)
-	const heightStep = Number(parameters.heightStep)
-    var newlyCreated = new Cylinder(radius, step, height, heightStep).toCIDEPGcode(new Point(-30, 0 ,0), "F4")
-	res.send(JSON.stringify(newlyCreated));
+
+	const polygonCase = parameters.polygonCase
+
+	switch(polygonCase) {
+    case "circle":
+		const radius = Number(parameters.radius)
+		const step = Number(parameters.step)
+		const height = Number(parameters.height)
+		const heightStep = Number(parameters.heightStep)
+		var newlyCreated = new Cylinder(radius, step, height, heightStep).toCIDEPGcode(new Point(-30, 0 ,0), "F4")
+		res.send(JSON.stringify(newlyCreated));
+        break;
+    case "cuboid":
+		const side = Number(parameters.side)
+		const step = Number(parameters.step)
+		const height = Number(parameters.height)
+		const heightStep = Number(parameters.heightStep)
+		var newlyCreated = new Cuboid(side, step, height, heightStep).toCIDEPGcode(new Point(-30, 0 ,0), "F4")
+		res.send(JSON.stringify(newlyCreated));
+        break;
+	}
 }); //router.post
 
 module.exports = router;

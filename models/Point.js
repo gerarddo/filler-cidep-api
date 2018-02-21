@@ -1,5 +1,5 @@
-var check = require('../tools/check');
-
+// var check = require('../tools/check');
+var approx = require('../tools/approx')
 var dimProcessor = require("../libraries/dimProcessor")
 // var space = require("../libraries/space")
 var math = require("../tools/math")
@@ -26,24 +26,25 @@ class Point{
 		for(var i = 0; i < this.value.length - 1; i++){
 			norm += Math.pow(this.value[i], 2)
 		}
-		return Math.sqrt(norm)
+		return approx.round(Math.sqrt(norm), 1000000)
 	}
 
 	// dot product
-	dot(point){ 
-		let product = 0
-		for(var i = 0; i < point.value.length; i++){
-			product += this.value[i]*point.value[i]
-		}
-		return product
-	}
+	// dot(point){ 
+	// 	let product = 0
+	// 	for(var i = 0; i < point.value.length; i++){
+	// 		product += this.value[i]*point.value[i]
+	// 	}
+	// 	return product
+	// }
 
 	distanceTo(point){
 		let distance = 0
 		for(var i = 0; i < point.value.length; i++){
 			distance += Math.pow(this.value[i] - point.value[i], 2)
 		}
-		return Math.sqrt(distance)
+		// return Math.sqrt(distance)
+		return approx.round(Math.sqrt(distance), 1000000)
 	}
 
 	XYangleTo(point){
@@ -69,8 +70,8 @@ class Point{
 			angle = -angle
 		}
 
-		return angle
-
+		// return angle
+		return approx.round(angle, 10000000000)
 	}
 }
 

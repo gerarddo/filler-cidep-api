@@ -1,9 +1,6 @@
-var check = require('../tools/check');
+var approx = require('../tools/approx');
 var Point = require('./Point')
 var gcode = require("../tools/gcode")
-
-
-// Object
 
 class Trajectory{
 
@@ -15,8 +12,8 @@ class Trajectory{
 	get value(){ return this._value }
 	set value(points){ this._value = points }
 
-	set length(value){ this._length = value }
-	get length(){ return getTrajectoryLength(this.value) }
+	set length(value){ this._length = approx.round(value, 1000000) }
+	get length(){ return this._length }
 
 	get extremes(){ return getExtremePoints(this.value) }
 
@@ -30,10 +27,7 @@ class Trajectory{
 		return array
 	}
 
-
-  	toGcode(speed){
-  		return gcode.trajectoryToGcode(this, speed);
-  	}
+  	toGcode(speed){ return gcode.trajectoryToGcode(this, speed); }
 }
 
 module.exports = Trajectory;

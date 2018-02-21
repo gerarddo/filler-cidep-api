@@ -1,7 +1,7 @@
 var processor = require("../libraries/processor");
 
 // var check = require('../tools/check');
-// var approx = require("../tools/approx");
+var approx = require("../tools/approx");
 var gcode = require("../tools/gcode");
 
 // var math = require("../tools/math");
@@ -22,6 +22,7 @@ class Plank extends Trajectory {
 
 
   	set index(value){ 
+  		value = approx.round(value, 1000000)
   		changeHeightOfPolygon(this.associatedPolygon, value)
   		changeHeightOfPoints(this.value, value)
   		this._index = value

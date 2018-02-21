@@ -20,10 +20,12 @@ var Cuboid = require("./models/scaffold/Cuboid")
 
 
 
-var testCylinder = new Cylinder(15, 2.5, 1.6, 0.4)
+// var testCylinder = new Cylinder(15, 2.5, 1.6, 0.4)
+var testCuboid = new Cuboid(9.8994949, 1, 1.6, 0.4)
 
 
-console.log(testCylinder.toCIDEPGcode(new Point(-30, 0 ,0), "F4"))
+// console.log(testCylinder.toGcode(new Point(-30, 0 ,0), "F4"))
+console.log(testCuboid.toCIDEPGcode(new Point(-30, 0 ,0), "F4"))
 
 // // ------------------------------------
 

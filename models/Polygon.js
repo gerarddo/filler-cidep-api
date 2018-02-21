@@ -11,7 +11,7 @@ class Polygon extends Trajectory {
 	    this.perimeter = getPerimeter(this.value); 
   	}
 
-  	set perimeter(value){ this._perimeter = value }
+  	set perimeter(value){ this._perimeter = approx.round(value, 1000000) }
   	get perimeter(){ return getPerimeter(this.value) }
 
   	get upperTrajectory(){ return slicePolygon(this).upperTrajectory }
