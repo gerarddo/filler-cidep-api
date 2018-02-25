@@ -3,6 +3,7 @@ var router = express.Router();
 var Cylinder = require("../models/scaffold/Cylinder")
 var Cuboid = require("../models/scaffold/Cuboid")
 var Point = require("../models/Point")
+var text = require("../tools/text")
 
 
 
@@ -57,6 +58,9 @@ router.post("/fill", function(req, res){
 		res.send(JSON.stringify(newlyCreated));
         break;
 	}
+
+	text.saveString(newlyCreated, "../public/web/examples/current.gcode")
+
 }); //router.post
 
 module.exports = router;

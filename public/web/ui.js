@@ -38,10 +38,13 @@
 // gcode_model = (new GcodeParser()).parse(gcode_file)
 // renderer = (new GcodeRenderer(webgl_context))
 
+
+
+
 var config = {
   // lastImportedKey: 'last-imported',
   // notFirstVisitKey: 'not-first-visit',
-  defaultFilePath: 'web/examples/current.gcode'
+  FilePath: 'web/examples/current.gcode'
   // defaultFilePath: 'web/examples/test.gcode'
 }
 
@@ -158,7 +161,7 @@ $(function() {
   // if (lastImported) {
   //   GCodeImporter.importText(lastImported, onGCodeLoaded);
   // } else {
-  GCodeImporter.importPath(config.defaultFilePath, onGCodeLoaded);
+  GCodeImporter.importPath(config.FilePath, onGCodeLoaded);
   // }
   // $('.create_scaffold').on('click', function(event) {
   //   // GCodeImporter.importPath(config.defaultFilePath, onGCodeLoaded);
