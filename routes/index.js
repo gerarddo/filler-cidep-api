@@ -50,7 +50,7 @@ router.post("/fill", function(req, res){
 		heightStep = Number(parameters.heightStep)
 		newlyCreated = new Cylinder(radius, step, height, heightStep)
 		CIDEPGcode = newlyCreated.toCIDEPGcode(new Point(-30, 0 ,0), "F4")
-		Gcode = newlyCreated.toCIDEPGcode()
+		Gcode = newlyCreated.toGcode()
 		res.send(JSON.stringify(CIDEPGcode));
         break;
     case "square":
@@ -60,7 +60,7 @@ router.post("/fill", function(req, res){
 		heightStep = Number(parameters.heightStep)
 		newlyCreated = new Cuboid(side, step, height, heightStep)
 		CIDEPGcode = newlyCreated.toCIDEPGcode(new Point(-30, 0 ,0), "F4")
-		Gcode = newlyCreated.toCIDEPGcode()
+		Gcode = newlyCreated.toGcode()
 		res.send(JSON.stringify(CIDEPGcode));
         break;
 	}
