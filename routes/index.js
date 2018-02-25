@@ -33,6 +33,8 @@ router.post("/fill", function(req, res){
 	let height = 0;
 	let heightStep = 0;
 	let newlyCreated = {};
+	let CIDEPGcode = ""
+	let Gcode = ""
 
 
 
@@ -46,20 +48,24 @@ router.post("/fill", function(req, res){
 		step = Number(parameters.step)
 		height = Number(parameters.height)
 		heightStep = Number(parameters.heightStep)
-		newlyCreated = new Cylinder(radius, step, height, heightStep).toCIDEPGcode(new Point(-30, 0 ,0), "F4")
-		res.send(JSON.stringify(newlyCreated));
+		newlyCreated = new Cylinder(radius, step, height, heightStep)
+		CIDEPGcode = newlyCreated.toCIDEPGcode(new Point(-30, 0 ,0), "F4")
+		Gcode = newlyCreated.toCIDEPGcode()
+		res.send(JSON.stringify(CIDEPGcode));
         break;
     case "square":
 		let side = Number(parameters.side)
 		step = Number(parameters.step)
 		height = Number(parameters.height)
 		heightStep = Number(parameters.heightStep)
-		newlyCreated = new Cuboid(side, step, height, heightStep).toCIDEPGcode(new Point(-30, 0 ,0), "F4")
-		res.send(JSON.stringify(newlyCreated));
+		newlyCreated = new Cuboid(side, step, height, heightStep)
+		CIDEPGcode = newlyCreated.toCIDEPGcode(new Point(-30, 0 ,0), "F4")
+		Gcode = newlyCreated.toCIDEPGcode()
+		res.send(JSON.stringify(CIDEPGcode));
         break;
 	}
 
-	text.saveString(newlyCreated, "../public/web/examples/current.gcode")
+	text.saveString(Gcode, "public/web/examples/current.gcode")
 
 }); //router.post
 
