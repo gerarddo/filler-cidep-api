@@ -24,8 +24,8 @@ function createScene(container) {
     scene = new THREE.Scene();
 
 
-var canvas = document.getElementById('canvas');
-    renderer = new THREE.WebGLRenderer( {canvas: canvas, clearColor: 0x000000, clearAlpha: 1, antialias: false } );
+// var canvas = document.getElementById('canvas');
+    renderer = new THREE.WebGLRenderer( {clearColor: 0x000000, clearAlpha: 1, antialias: false } );
     renderer.autoClear = false;
 
     container.appendChild( renderer.domElement );

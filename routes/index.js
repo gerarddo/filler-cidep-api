@@ -10,6 +10,12 @@ router.get("/", function(req, res){
     res.send("This is the filler api working")
 }); //router.get
 
+
+router.get("/simulator", function(req, res){
+    res.render("simulator")
+}); //router.get
+
+
 router.post("/fill", function(req, res){
 	// console.log("post request at /fill");
     

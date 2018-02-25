@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <!--
+    GCode Viewer
+    https://github.com/jherrm/gcode-viewer
+  -->
+  <head>
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta charset="utf-8">
+    <title>GCode Viewer</title>
+    <!-- <link rel="stylesheet" href="lib/bootstrap.min.css"> -->
+    <style>
+      #renderArea {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: 0;
+        background-color: #000000;
+      }
+      .dg.main {
+        margin-top:40px;
+      }
+    </style>
+    <!-- 3rd party libs -->
+    <script src="web/lib/modernizr.custom.93389.js"></script>
+    <script src="web/lib/jquery-1.7.1.min.js"></script>
+    <script src="web/lib/bootstrap-modal.js"></script>
+    <script src="web/lib/sugar-1.2.4.min.js"></script>
+    <script src="web/lib/three.js"></script>
+    <script src="web/lib/TrackballControls.js"></script>
+
+    <script src="web/js/ShaderExtras.js"></script>
+    <script src="web/js/postprocessing/EffectComposer.js"></script>
+    <script src="web/js/postprocessing/MaskPass.js"></script>
+    <script src="web/js/postprocessing/RenderPass.js"></script>
+    <script src="web/js/postprocessing/ShaderPass.js"></script>
+    <script src="web/js/postprocessing/BloomPass.js"></script>
+
+    <script src="web/js/Stats.js"></script>
+    <script src="web/js/DAT.GUI.min.js"></script>
+    <!-- Custom code -->
+    <script type="text/javascript" src="web/gcode_model.js"></script>
+    <script type="text/javascript" src="web/gcode_parser.js"></script>
+    <script type="text/javascript" src="web/gcode_interpreter.js"></script>
+    <script type="text/javascript" src="web/gcode_importer.js"></script>
+    <script type="text/javascript" src="web/gcode_renderer.js"></script>
+    <script src="web/renderer.js"></script>
+    <script src="web/ui.js"></script>
+
+  </head>
+  <body>
+
+
+
+    <!-- WebGL rendering area -->
+    <div id="renderArea"></div>
+
+
+
+  </body>
+</html>
