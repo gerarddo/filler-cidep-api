@@ -19,24 +19,24 @@ function isNumber (value) {
 
 router = {
 
-    equal: function equal(a, b, epsilon) {
-        if (epsilon === undefined) {
-            epsilon = EPSILON;
-        }
+    equal: function equal(a, b, magnitude) {
+        if (magnitude === undefined) { magnitude = EPSILON; } 
+        else if (!isNumber(magnitude)){ return TypeError("magnitude has to be a number bro"); }
+        let tolerance = this.round(1/magnitude)
 
         if (isNumber(a) && isNumber(b)) {
-            if (a === b) {
-                return true
-            } else if (a === 0) {
-                return Math.abs(b) < epsilon ? true : false;
-            } else if (b === 0) {
-                return Math.abs(a) < epsilon ? true : false;
-            } else {
-                return Math.abs(a - b) < epsilon ? true : false;
+            if (a === b) { return true } 
+            else if (a === 0) { return Math.abs(b) < tolerance ? true : false; } 
+            else if (b === 0) { return Math.abs(a) < tolerance ? true : false; } 
+            else { return Math.abs(a - b) < tolerance ? true : false; }
+        } else if(Array.isArray(a) && Array.isArray(b)){
+            if(a.length !== b.length){ return false; }
+            for(var i = 0; i < a.length; i++){
+                let theyreEqual = Math.abs(a[i] - b[i]) < tolerance ? true : false;
+                if(!theyreEqual){ return false; }
             }
-        } else {
-            console.log("error at approx.js: .equal")
-        }
+            return true;
+        } else { console.log("error at approx.js: .equal") }
     },
 
     round: function approximate(data, magnitude){

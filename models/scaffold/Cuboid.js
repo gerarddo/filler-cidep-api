@@ -36,8 +36,9 @@ function getCuboidPlanks(side, step, height, heightStep){
 	
 		let currentPlank = new Plank(currentSquare, step, orientation)
 
+		// console.log("from getCuboidPlanks")
 		// console.log("current plank is")
-		// console.log(currentPlank)
+		// console.log(currentPlank.value)
 
 		planks.push(currentPlank)
 

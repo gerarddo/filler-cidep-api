@@ -15,87 +15,62 @@ var router = {
 module.exports = router;
 
 function processAndFillPolygon(polygon, step, orientation){
-	// // rotate by 90 degrees in case we want to fill horizontally
-	if(orientation === "horizontal"){
-		polygon = space.rotatePolygonBy90(polygon)
-	}
-
-	var upperPointsAux = polygon.upperTrajectory.value
-	var lowerPointsAux = polygon.lowerTrajectory.value
-
-	// console.log("from processor, upperPointsAux and lowerPointsAux")
-	// console.log(upperPointsAux)
-	// console.log(lowerPointsAux)
-
-	upperPointsAux = _sortPoints(upperPointsAux)
-	lowerPointsAux = _sortPoints(lowerPointsAux) //Maybe we could erase _sortPoints from here since polygon gives this already ordered
-	
-	let lastUpperPoint = upperPointsAux[upperPointsAux.length-1]
-	let lastLowerPoint = lowerPointsAux[lowerPointsAux.length-1]
-
-
-
-
-	upperPointsAux = _preselectPoints(upperPointsAux, step)
-	lowerPointsAux = _preselectPoints(lowerPointsAux, step)
-
-	var upperPoints = [];
-	var lowerPoints = [];
-
-	var displacement = 0
-
-	// start the retrajectorization and filling
+	// Rotate by 90 degrees in case we want to fill horizontally
+	if(orientation === "horizontal"){ polygon = space.rotatePolygonBy90(polygon) }
+	// Retrieve polygons divisions
+	var upperPointsAux = polygon.upperTrajectory.value,
+		lowerPointsAux = polygon.lowerTrajectory.value;
+	// Get last points to add at the end since _preselectPoints may take'em away
+	let lastUpperPoint = upperPointsAux[upperPointsAux.length-1],
+		lastLowerPoint = lowerPointsAux[lowerPointsAux.length-1];
+	// Make the preselection of points
+	upperPointsAux = _preselectPoints(upperPointsAux, step);
+	lowerPointsAux = _preselectPoints(lowerPointsAux, step);
+	// Declare variables needed in for loop
+	var upperPoints = [],
+	 	lowerPoints = [],
+		displacement = 0;
+	// Start the retrajectorization and filling
 	for(var i = 0; i < upperPointsAux.length-1; i++){
-		var pointFi = upperPointsAux[i+1]
-		var pointIn = upperPointsAux[i]
-		displacement = 0
-
-		if( i > 0){
+		// Select current points of interest
+		var pointFi = upperPointsAux[i+1],
+			pointIn = upperPointsAux[i];
+		// Reset displacement
+		displacement = 0;
+		if(i > 0){
 			var diff = _latestDifference(upperPoints, pointIn, 0, step)
 			displacement = approx.round(Math.abs(diff - step))
 		}
-
 		var side = _trajectorizePoints(pointFi, pointIn, step, displacement).value
 		upperPoints = upperPoints.concat(side)
 	}
 	for(var i = 0; i < lowerPointsAux.length-1; i++){
-		var pointFi = lowerPointsAux[i+1]
-		var pointIn = lowerPointsAux[i]
-		displacement = 0
-
+		// Select current points of interest
+		var pointFi = lowerPointsAux[i+1],
+			pointIn = lowerPointsAux[i];
+		// Reset displacement
+		displacement = 0;
 		if( i > 0){
 			var diff = _latestDifference(lowerPoints, pointIn, 0, step)
 			displacement = approx.round(Math.abs(diff - step))
 		}
-
 		var side = _trajectorizePoints(pointFi, pointIn, step, displacement).value
 		lowerPoints = lowerPoints.concat(side)
 	}
-
-	upperPoints.push(lastUpperPoint)
-	lowerPoints.push(lastLowerPoint)
-
-
-
-	// console.log("from processAndFillPolygon")
-	// console.log(upperPoints)
-	// console.log(lowerPoints)
-
-
-	// upperPoints.pop()
-
+	let theyreEqual = Boolean;
+	theyreEqual = approx.equal(upperPoints[upperPoints.length-1].value, lastUpperPoint.value)
+	if(!theyreEqual){ upperPoints.push(lastUpperPoint); }
+	theyreEqual = approx.equal(lowerPoints[lowerPoints.length-1].value, lastLowerPoint.value)
+	if(!theyreEqual){ lowerPoints.push(lastLowerPoint); }	
+	// Rotate back in case we want horizontal
 	if(orientation === "horizontal"){
 		upperPoints = space.rotate2DSpaceByMinus90(upperPoints)
 		lowerPoints = space.rotate2DSpaceByMinus90(lowerPoints)
 	}
-
 	var alternatedPoints = [];
 	alternatedPoints = _alternatePointsForPlank(upperPoints, lowerPoints)
-
 	return alternatedPoints;
 }
-
-
 
 // AlternatePointsForScaffold assume its parameters have the same length
 function _alternatePointsForPlank(upperPoints, lowerPoints){
@@ -176,20 +151,14 @@ function _sortPoints(points) {
 	return points;
 }
 
-// Preselection of points
 function _preselectPoints(points, step){
-
-	if(step===undefined){
-		throw new TypeError("step is not defined")
-	}
-
+	// Check if user didn't forgot step parameter
+	if(step===undefined){ throw new TypeError("step is not defined") }
 	let i = 0
 	while(points[i+1]!=undefined){
+		// Retrieve x distance between current point and next point in array
 		let indieDistanceBetweenPoints = Math.abs(points[i].value[0] - points[i+1].value[0])
-		// console.log("distanceProjectedOnIndie")
-		// console.log(indieDistanceBetweenPoints)
-		// console.log(step)
-
+		// if (x distance to next point is smaller that step) then { remove next point from array }
 		if( approx.round(indieDistanceBetweenPoints) < approx.round(step)){
 			points.splice(i+1, 1)
 			i--

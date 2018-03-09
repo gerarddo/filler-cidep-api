@@ -18,27 +18,12 @@ router.get("/simulator", function(req, res){
 
 
 router.post("/fill", function(req, res){
-	// console.log("post request at /fill");
-    
-	// const r = Number(req.body.r)
-	// const step = Number(req.body.step)
-	// const height = Number(req.body.height)
-	// const heightStep = Number(req.body.heightStep)
-
-    // var newCylinder = new Cylinder(r, step, height, heightStep).toCIDEPGcode(new Point(-30, 0 ,0), "F4")
-    
-    // res.render("index", {fill: true, cylinderGcode: newCylinder})
-
 	let step = 0;
 	let height = 0;
 	let heightStep = 0;
 	let newlyCreated = {};
-	let CIDEPGcode = ""
-	let Gcode = ""
-	let output = {}
 	let parameters = JSON.parse(req.body.parameters)
 	const polygonCase = parameters.polygonCase
-
 	switch(polygonCase) {
     case "circle":
 		let radius = Number(parameters.radius)
@@ -46,16 +31,6 @@ router.post("/fill", function(req, res){
 		height = Number(parameters.height)
 		heightStep = Number(parameters.heightStep)
 		newlyCreated = new Cylinder(radius, step, height, heightStep)
-		// CIDEPGcode = newlyCreated.toCIDEPGcode(new Point(-30, 0 ,0), "F4")
-		// CIDEPGcode = newlyCreated.toCIDEPGcode("F4")
-		// Gcode = newlyCreated.toGcode()
-
-		// output = {
-		// 	info: newlyCreated,
-		// 	Gcode: CIDEPGcode
-		// }
-		// res.send(JSON.stringify(CIDEPGcode));
-		// res.send(JSON.stringify(output));
         break;
     case "square":
 		let side = Number(parameters.side)
@@ -63,23 +38,11 @@ router.post("/fill", function(req, res){
 		height = Number(parameters.height)
 		heightStep = Number(parameters.heightStep)
 		newlyCreated = new Cuboid(side, step, height, heightStep)
-		// CIDEPGcode = newlyCreated.toCIDEPGcode(new Point(-30, 0 ,0), "F4")
-		// CIDEPGcode = newlyCreated.toCIDEPGcode("F4")
-		// Gcode = newlyCreated.toGcode()
-
-		// output = {
-		// 	scaffold: newlyCreated,
-		// 	Gcode: CIDEPGcode
-		// }
-		// // res.send(JSON.stringify(CIDEPGcode));
-		// res.send(JSON.stringify(newlyCreated));
         break;
 	}
-
-	CIDEPGcode = newlyCreated.toCIDEPGcode("F4")
-	Gcode = newlyCreated.toGcode()
-
-	output = {
+	let CIDEPGcode = newlyCreated.toCIDEPGcode("F4")
+	let Gcode = newlyCreated.toGcode()
+	let output = {
 		CIDEPGcode: CIDEPGcode,
 		Gcode: Gcode,
 		info: {
@@ -88,11 +51,8 @@ router.post("/fill", function(req, res){
 			volume: newlyCreated._volume
 		}
 	}
-	
 	res.send(JSON.stringify(output));
-
 	text.saveString(Gcode, "public/web/examples/current.gcode")
-
 }); //router.post
 
 module.exports = router;

@@ -1,108 +1,59 @@
 var Trajectory = require("./Trajectory")
 var Point = require("./Point")
+var approx = require("../tools/approx")
 var gcode = require("../tools/gcode")
 
 class Scaffold extends Trajectory {
 	
 
 	constructor(planks, heightStep) {
-
-		let lastPoints = []
 		let points = []
 		let flags = []
-		var startExtrusionIndex = 0
-		var stopExtrusionIndex = 0
-		for(var i = 0; i < planks.length; i++){
-			let currentPlank = planks[i]
-			// Declare that from this array's index on, you will be extruding material
-			if(i === 0){
-				startExtrusionIndex = 0
-			} else {
-				startExtrusionIndex = points.length + 1
-			}
-			// Add the path of the plank where you will be extruding material
-			points = points.concat(currentPlank.value)
-
-			var lastPointOfCurrentPlank = currentPlank.value[currentPlank.value.length - 1]
-			let x = lastPointOfCurrentPlank.value[0]
-			let y = lastPointOfCurrentPlank.value[1]
-			let z = lastPointOfCurrentPlank.value[2]
-
-			// Declare that from this array's index on, you won't be extruding material
-			stopExtrusionIndex = points.length - 1 
-			// Add the point that will work as a transition between planks, were you won't be extruding material
-			points.push(new Point(x, y, z + heightStep))
-			// Finally, push the flag with the indexes
+		let transitions = getArrayOfTransitionPoints(planks)
+		// Add the outerPoint
+		let pointIn = planks[0].value[0]
+		points.push(pointIn.scale(2))
+		// Start adding planks with their transitions, except the last plank
+		for(var i = 0; i < planks.length - 1; i++){
+			points = points.concat(planks[i].value)
+			let startTransition = points.length
+			points = points.concat(transitions[i])
+			let endTransition = points.length
+			// Put flags for every transition start and finish
 			flags.push({
-				startExtrusionIndex: startExtrusionIndex,
-				stopExtrusionIndex: stopExtrusionIndex
+				startTransition: startTransition,
+				endTransition: endTransition
 			})
-
-			// Start retrieving the transition points
-			if(planks[i+1]!==undefined){
-				var nextPlank = planks[i+1]
-				var firstPointOfNextPlank = nextPlank.value[0]
-				var transitionPoints = []
-				if(nextPlank.orientation === "horizontal"){
-					let horizontalTrajValue = reversePoints(nextPlank.associatedPolygon.upperTrajectory.value)
-					transitionPoints = getPointsInAngleInterval(horizontalTrajValue, firstPointOfNextPlank,lastPointOfCurrentPlank)
-					transitionPoints = reversePoints(transitionPoints)
-				} else {
-					let verticalTrajValue = nextPlank.associatedPolygon.lowerTrajectory.value
-					let transitionPointsReverted = getPointsInAngleInterval(verticalTrajValue, firstPointOfNextPlank,lastPointOfCurrentPlank)
-					transitionPoints = reversePoints(transitionPointsReverted)
-				}
-				// Add the transition points where you won't be extruding anything
-				points = points.concat(transitionPoints)
-			} 
-		} 
-
-		// Add first point of trajectory away from solid
-
-		points.unshift(points[0].scale(2))
+		}
+		// Add the last plank
+		points = points.concat(planks[planks.length-1].value)
 
 		super(points, "none")
-		this.flag = flags
+		this.flags = flags
 		this.heightStep = heightStep
 		this.associatedPlanks = planks
+		this.transitions = transitions
 		this.volume = getVolumeOfScaffold(this)
 		this.area = getAreaOfScaffold(this)
   	}
 
-  	set flag(value){
-  		this._flag = value;
-  	}
-  	get flag(){
-  		return this._flag
-  	}
+  	set flags(value){ this._flags = value; }
+  	get flags(){ return this._flags }
 
-  	set heightStep(value){
-  		this._heightStep = value
-  	}
-  	get heightStep(){
-  		return this._heightStep
-  	}
+  	set heightStep(value){ this._heightStep = value }
+  	get heightStep(){ return this._heightStep }
 
-  	set volume(value){
-  		this._volume = value
-  	}
-  	get volume(){
-  		return this._volume
-  	}
+  	set volume(value){ this._volume = value }
+  	get volume(){ return this._volume }
 
-  	set area(value){
-  		this._area = value
-  	}
-  	get area(){
-  		return this._area
-  	}
+  	set area(value){ this._area = value }
+  	get area(){ return this._area }
 
-  	set associatedPlanks(value){
-  		this._associatedPlanks = value
-  	}
-  	get associatedPlanks(){
-  		return this._associatedPlanks
-  	}
+  	set associatedPlanks(value){ this._associatedPlanks = value }
+  	get associatedPlanks(){ return this._associatedPlanks }
+
+  	set transitions(value){ this._transitions = value }
+  	get transitions(){ return this._transitions }
 
   	// toCIDEPGcode(pointIn, speed){
   	// 	return gcode.scaffoldToCIDEPGcode(this, pointIn, speed);
@@ -115,6 +66,34 @@ class Scaffold extends Trajectory {
 
 module.exports = Scaffold;
 
+function getArrayOfTransitionPoints(planks){
+	let transitions = [];
+	for(var i = 0; i < planks.length-1; i++){
+		// Get of last point before transition begins
+		let currentPlank = planks[i],
+			lastPointOfCurrentPlank = currentPlank.value[currentPlank.value.length - 1];
+		// Get first point of transition
+		let nextPlank = planks[i+1],
+			firstPointOfNextPlank = nextPlank.value[0];
+		// Retrieve rest of transition points for this pair of planks
+		var transitionPoints = [];
+		if(nextPlank.orientation === "horizontal"){
+			let horizontalTrajValue = reversePoints(nextPlank.associatedPolygon.upperTrajectory.value);
+			transitionPoints = getPointsInAngleInterval(horizontalTrajValue, firstPointOfNextPlank,lastPointOfCurrentPlank);
+		} else if(nextPlank.orientation === "vertical"){
+			let verticalTrajValue = nextPlank.associatedPolygon.lowerTrajectory.value;
+			let transitionPointsReverted = getPointsInAngleInterval(verticalTrajValue, firstPointOfNextPlank,lastPointOfCurrentPlank);
+			transitionPoints = reversePoints(transitionPointsReverted);
+		}
+		// Last point of the transition is the first of next plank, so let's pop it
+		transitionPoints.pop();
+		// Round up points values
+		transitionPoints.forEach((point) => { point.value = approx.round(point.value); })
+
+		transitions[i] = transitionPoints;
+	} 
+	return transitions
+}
 
 function reversePoints(points){
 	let j = 0
@@ -133,11 +112,11 @@ function getPointsInAngleInterval(points, pointFi, pointIn){
 	var transitionPoints = []
 	var i = 0 
 	while(true){
-		if(points[i]===undefined){
-			break;
-		}
+		// stop loop in case we're done with points
+		if(points[i]===undefined){break;} 
 		currentAngle = pointIn.XYangleTo(points[i])
-		if(currentAngle*angle > 0 && Math.abs(angle) > Math.abs(currentAngle)){
+		// if ((currentAngle and angle have same direction) && (angle bigger than currentAngle)) then ...
+		if(currentAngle*angle >= 0 && Math.abs(angle) >= Math.abs(currentAngle)){
 			transitionPoints.push(points[i])
 		} else if (currentAngle*angle > 0 && Math.abs(angle) < Math.abs(currentAngle)){
 			break;

@@ -1,24 +1,24 @@
-// var functions = require("./libraries/functions")
-// // var approx = require("./tools/approx")
 // var text = require('./tools/text');
-// // var Trajectory = require('./models/Trajectory.js');
+var approx = require('./tools/approx');
 
-// text.saveString("G1 X0 Y0 Z0 \n G1 X1 Y1 Z1", "public/web/examples/current.gcode")
+// var Square = require("./models/polygon/Square")
+// var Cuboid = require("./models/scaffold/Cuboid")
+// var Cylinder = require("./models/scaffold/Cylinder")
+
+// var Point = require("./models/Point")
+// var Plank = require("./models/Plank")
+
+// testCuboid = new Cuboid(10.18233764, 2.4, 2, 1)
+// testCylinder = new Cylinder(5, 1, 2, 1)
+
+// text.saveString(testCuboid.toCIDEPGcode(), "public/web/examples/current.gcode")
 
 
-var Square = require("./models/polygon/Square")
-var Cuboid = require("./models/scaffold/Cuboid")
-var Point = require("./models/Point")
+let a = [0,0,0.000000000000001];
+let b = [0,0,0];
 
-testVector = [1,3,0];
-
-testPoint = new Point(...testVector);
-
-// console.log(testPoint.scale(2))
+console.log(approx.equal(a,b))
 
 
-// testSquare = new Square(10, 10)
-testCuboid = new Cuboid(10, 1, 1, 1)
 
-console.log(testCuboid.toCIDEPGcode("F4"))
-// console.log(testCuboid._area)
+
