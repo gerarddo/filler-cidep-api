@@ -1,4 +1,5 @@
 var approx = require('./approx.js')
+var Point = require('../models/Point')
 
 
 var router = {
@@ -29,20 +30,30 @@ var router = {
 		extrusion += outerPoint.distanceTo(pointIn)*iMat;
 
 		let addPointsToCIDEPGcode = function(points, transitionHeightStep){
+
 			let partialGcode = "";
-			points.forEach((point) => { point.value[2] = 0; })
+			let values = [];
+			var j = 0;
+			points.forEach((point) => { 
+				// We clone so that the original Point instance doesn't get modified
+				let clone = new Point(...point.value)
+				values[j] = clone.value;
+				values[j][2] = 0;
+				j++
+			})
 			if(transitionHeightStep !== undefined && transitionHeightStep !== 0){
-				points[0].value[2] = transitionHeightStep
-				points.forEach((point) => {
-					let x = point.value[0], y = point.value[1], z = point.value[2];
-					partialGcode += `G1 X${x} Y${y} Z${z} \n`
+				values[0][2] = transitionHeightStep
+				values.forEach((value) => {
+					let x = value[0], y = value[1], z = value[2];
+					partialGcode += `G1 X${x} Y${y} Z${z} \n`;
 				})
 			} else {
-				for(var i = 0; i < points.length-1; i++){
+				for(var i = 0; i < values.length-1; i++){
 					let currentPoint = points[i],
-						x = currentPoint.value[0], 
-						y = currentPoint.value[1], 
-						z = currentPoint.value[2];
+						currentValue = values[i],
+						x = currentValue[0], 
+						y = currentValue[1], 
+						z = currentValue[2];
 					let nextPoint = points[i+1];
 					extrusion += currentPoint.distanceTo(nextPoint)*iMat;
 					partialGcode += `G1 X${x} Y${y} Z${z} E${approx.round(extrusion)} \n`
