@@ -16,9 +16,17 @@ var router = {
 		return gcode
 	},
 
-	scaffoldToCIDEPGcode: function(scaffold, pointIn, speed){
+	scaffoldToCIDEPGcode: function(scaffold, speed){
+
+// var scaffoldValue = scaffold.value
+		// scaffoldValue[0] = scaffoldValue[0].scale(2.12132)
+
+
+
+
 		const scaffoldValue = scaffold.value
-		const pointInOfScaffold = scaffoldValue[0]
+		const pointIn = scaffoldValue[0]
+		const pointInOfScaffold = scaffoldValue[1]
 		const flags = scaffold._flag
 		const heightStep = scaffold._heightStep
 
@@ -39,9 +47,11 @@ var router = {
 		}
 		gcode += "\n"
 
+		// Start extruding from the outerpoint
 		extrusion += pointIn.distanceTo(pointInOfScaffold)*iMat
 		
-		for(var i = 0; i < scaffoldValue.length; i++){
+		for(var i = 1; i < scaffoldValue.length; i++){
+
 			let currentPoint = scaffoldValue[i]
 			let	nextPoint = scaffoldValue[i+1]				
 			let currentPointValue = currentPoint.value

@@ -35,11 +35,8 @@ router.post("/fill", function(req, res){
 	let newlyCreated = {};
 	let CIDEPGcode = ""
 	let Gcode = ""
-
-
-
+	let output = {}
 	let parameters = JSON.parse(req.body.parameters)
-
 	const polygonCase = parameters.polygonCase
 
 	switch(polygonCase) {
@@ -49,9 +46,16 @@ router.post("/fill", function(req, res){
 		height = Number(parameters.height)
 		heightStep = Number(parameters.heightStep)
 		newlyCreated = new Cylinder(radius, step, height, heightStep)
-		CIDEPGcode = newlyCreated.toCIDEPGcode(new Point(-30, 0 ,0), "F4")
-		Gcode = newlyCreated.toGcode()
-		res.send(JSON.stringify(CIDEPGcode));
+		// CIDEPGcode = newlyCreated.toCIDEPGcode(new Point(-30, 0 ,0), "F4")
+		// CIDEPGcode = newlyCreated.toCIDEPGcode("F4")
+		// Gcode = newlyCreated.toGcode()
+
+		// output = {
+		// 	info: newlyCreated,
+		// 	Gcode: CIDEPGcode
+		// }
+		// res.send(JSON.stringify(CIDEPGcode));
+		// res.send(JSON.stringify(output));
         break;
     case "square":
 		let side = Number(parameters.side)
@@ -59,11 +63,33 @@ router.post("/fill", function(req, res){
 		height = Number(parameters.height)
 		heightStep = Number(parameters.heightStep)
 		newlyCreated = new Cuboid(side, step, height, heightStep)
-		CIDEPGcode = newlyCreated.toCIDEPGcode(new Point(-30, 0 ,0), "F4")
-		Gcode = newlyCreated.toGcode()
-		res.send(JSON.stringify(CIDEPGcode));
+		// CIDEPGcode = newlyCreated.toCIDEPGcode(new Point(-30, 0 ,0), "F4")
+		// CIDEPGcode = newlyCreated.toCIDEPGcode("F4")
+		// Gcode = newlyCreated.toGcode()
+
+		// output = {
+		// 	scaffold: newlyCreated,
+		// 	Gcode: CIDEPGcode
+		// }
+		// // res.send(JSON.stringify(CIDEPGcode));
+		// res.send(JSON.stringify(newlyCreated));
         break;
 	}
+
+	CIDEPGcode = newlyCreated.toCIDEPGcode("F4")
+	Gcode = newlyCreated.toGcode()
+
+	output = {
+		CIDEPGcode: CIDEPGcode,
+		Gcode: Gcode,
+		info: {
+			planks: newlyCreated._associatedPlanks.length,
+			area: newlyCreated._area,
+			volume: newlyCreated._volume
+		}
+	}
+	
+	res.send(JSON.stringify(output));
 
 	text.saveString(Gcode, "public/web/examples/current.gcode")
 

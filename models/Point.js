@@ -10,10 +10,7 @@ class Point{
 		this.value = [x, f, g]
 	}
 
-	get value(){
-		return this._value
-	}
-
+	get value(){return this._value}
 	set value(array){
 		if(array[2]===undefined){
 			throw new TypeError("Point is missing a component")
@@ -29,6 +26,7 @@ class Point{
 		return approx.round(Math.sqrt(norm), 1000000)
 	}
 
+
 	// dot product
 	// dot(point){ 
 	// 	let product = 0
@@ -37,6 +35,21 @@ class Point{
 	// 	}
 	// 	return product
 	// }
+	scale(scalar){
+		let vector =  this.value
+
+		// console.log("from scale")
+		// console.log(vector)
+
+		let scaledVector = vector.map((component) => {
+			return component*scalar
+		})
+
+		// console.log(scaledVector)
+
+
+		return new Point(...scaledVector)
+	}
 
 	distanceTo(point){
 		let distance = 0

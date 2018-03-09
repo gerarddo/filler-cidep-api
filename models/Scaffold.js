@@ -57,9 +57,16 @@ class Scaffold extends Trajectory {
 			} 
 		} 
 
+		// Add first point of trajectory away from solid
+
+		points.unshift(points[0].scale(2))
+
 		super(points, "none")
 		this.flag = flags
 		this.heightStep = heightStep
+		this.associatedPlanks = planks
+		this.volume = getVolumeOfScaffold(this)
+		this.area = getAreaOfScaffold(this)
   	}
 
   	set flag(value){
@@ -76,10 +83,34 @@ class Scaffold extends Trajectory {
   		return this._heightStep
   	}
 
-  	toCIDEPGcode(pointIn, speed){
-  		return gcode.scaffoldToCIDEPGcode(this, pointIn, speed);
+  	set volume(value){
+  		this._volume = value
+  	}
+  	get volume(){
+  		return this._volume
   	}
 
+  	set area(value){
+  		this._area = value
+  	}
+  	get area(){
+  		return this._area
+  	}
+
+  	set associatedPlanks(value){
+  		this._associatedPlanks = value
+  	}
+  	get associatedPlanks(){
+  		return this._associatedPlanks
+  	}
+
+  	// toCIDEPGcode(pointIn, speed){
+  	// 	return gcode.scaffoldToCIDEPGcode(this, pointIn, speed);
+  	// }
+
+  	toCIDEPGcode(speed){
+  		return gcode.scaffoldToCIDEPGcode(this, speed);
+  	}
 }
 
 module.exports = Scaffold;
@@ -117,8 +148,27 @@ function getPointsInAngleInterval(points, pointFi, pointIn){
 }
 
 
+function getVolumeOfScaffold(scaffold){
+	let planks = scaffold.associatedPlanks
+	let volume = 0;
+	for(var i = 0; i < planks.length; i++){
+		let currentPolygon = planks[0].associatedPolygon
+		volume += currentPolygon.area*scaffold.heightStep;
+	}
+	return volume
+}
 
-
+function getAreaOfScaffold(scaffold){
+	let planks = scaffold.associatedPlanks
+	let area = 0;
+	for(var i = 0; i < planks.length; i++){
+		let currentPolygon = planks[0].associatedPolygon
+		area += currentPolygon.perimeter*scaffold.heightStep;
+	}
+	area += planks[0].associatedPolygon.area
+	area += planks[planks.length-1].associatedPolygon.area
+	return area
+}
 
 
 

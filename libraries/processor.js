@@ -28,7 +28,7 @@ function processAndFillPolygon(polygon, step, orientation){
 	// console.log(lowerPointsAux)
 
 	upperPointsAux = _sortPoints(upperPointsAux)
-	lowerPointsAux = _sortPoints(lowerPointsAux)
+	lowerPointsAux = _sortPoints(lowerPointsAux) //Maybe we could erase _sortPoints from here since polygon gives this already ordered
 	
 	let lastUpperPoint = upperPointsAux[upperPointsAux.length-1]
 	let lastLowerPoint = lowerPointsAux[lowerPointsAux.length-1]

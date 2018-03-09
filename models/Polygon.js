@@ -9,6 +9,7 @@ class Polygon extends Trajectory {
 		checkPointsHeight(points)
 	    super(points);
 	    this.perimeter = getPerimeter(this.value); 
+	    this.area = getArea(this.upperTrajectory, this.lowerTrajectory)
   	}
 
   	set perimeter(value){ this._perimeter = approx.round(value, 1000000) }
@@ -17,10 +18,29 @@ class Polygon extends Trajectory {
   	get upperTrajectory(){ return slicePolygon(this).upperTrajectory }
 
   	get lowerTrajectory(){ return slicePolygon(this).lowerTrajectory }
+
+  	set area(value){ this._area = approx.round(value, 1000000) }
+  	get area(){ return getArea(this.upperTrajectory, this.lowerTrajectory) }
 }
 
 module.exports = Polygon;
 
+function getArea(upperTrajectory, lowerTrajectory){
+	let area = 0;
+	for(var i = 0; i < upperTrajectory.value.length - 1; i++){
+		let currentPointIn = upperTrajectory.value[i];
+		let currentPointFi = upperTrajectory.value[i+1];
+		let deltaX = currentPointFi.value[0] - currentPointIn.value[0]
+		area += (currentPointIn.value[1]+currentPointFi.value[1])*deltaX/2 // Area of trapezium
+	}
+	for(var i = 0; i < lowerTrajectory.value.length - 1; i++){
+		let currentPointIn = lowerTrajectory.value[i];
+		let currentPointFi = lowerTrajectory.value[i+1];
+		let deltaX = currentPointFi.value[0] - currentPointIn.value[0]
+		area += -(currentPointIn.value[1]+currentPointFi.value[1])*deltaX/2 // Area of trapezium
+	}
+	return area
+}
 
 
 
@@ -56,10 +76,38 @@ function slicePolygon(polygon) {
 	var lowerPoints = points.filter(function(point){
 		return point.value[1] <= approx.round(m*point.value[0] + b)
 	})
+	lowerPoints = _sortPoints(lowerPoints)
+	upperPoints = _sortPoints(upperPoints)
+
 	var upperTrajectory = new Trajectory(upperPoints, 0, "positive")
 	var lowerTrajectory = new Trajectory(lowerPoints, 0, "positive")
+
+
+
 	return {
 		upperTrajectory: upperTrajectory, 
 		lowerTrajectory: lowerTrajectory
 	}
+}
+
+function _sortPoints(points) {
+	function swap(array, i, j) {
+	  	var temp = array[i];
+	  	array[i] = array[j];
+	  	array[j] = temp;
+	}
+	function compare(a, b){
+		return a > b
+	}
+  	var swapped;
+	do {
+	    swapped = false;
+	    for(var i = 0; i < points.length; i++) {
+	      	if(points[i] && points[i + 1] && compare(points[i].value[0], points[i + 1].value[0])){
+	        	swap(points, i, i + 1);
+	        	swapped = true;
+	      	}
+	    }
+	} while(swapped);
+	return points;
 }
