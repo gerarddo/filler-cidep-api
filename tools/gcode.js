@@ -27,10 +27,59 @@ var router = {
 			  iMat = 0.026;
 		var   extrusion = 0;
 
-		extrusion += outerPoint.distanceTo(pointIn)*iMat;
+		// extrusion += outerPoint.distanceTo(pointIn)*iMat;
 
-		let addPointsToCIDEPGcode = function(points, transitionHeightStep){
+		// Rembember to fix the fact that the last point ins't getting printed
+		let addPlankPointsToCIDEPGcode = function(points, initialPoint){
+			let partialGcode = "";
+			let values = [];
+			var j = 0;
+			points.forEach((point) => { 
+				// We clone so that the original Point instance doesn't get modified
+				let clone = new Point(...point.value)
+				values[j] = clone.value;
+				// Set all z components to 0
+				values[j][2] = 0;
+				j++
+			})
 
+
+			// let firstValue = values[0]
+			let currentPoint = points[0], 
+				currentValue = values[0],
+				x = currentValue[0], y = currentValue[1], z = currentValue[2];
+			let lastPoint = initialPoint;
+			console.log("initialPoint is")
+			console.log(initialPoint)
+			console.log(extrusion)
+			extrusion += currentPoint.distanceTo(lastPoint)*iMat;
+			console.log( currentPoint.distanceTo(lastPoint))
+
+			partialGcode += `G1 X${x} Y${y} Z${z} E${approx.round(extrusion)} \n`			
+
+
+			for(var i = 1; i < values.length; i++){
+				currentPoint = points[i], currentValue = values[i],
+				x = currentValue[0], y = currentValue[1], z = currentValue[2];
+				lastPoint = points[i-1];
+				extrusion += currentPoint.distanceTo(lastPoint)*iMat;
+				partialGcode += `G1 X${x} Y${y} Z${z} E${approx.round(extrusion)} \n`
+			}
+
+			// if(lastPoint !== undefined){
+			// 	let currentPoint = points[i],
+			// 		currentValue = values[i],
+			// 		x = currentValue[0], 
+			// 		y = currentValue[1], 
+			// 		z = currentValue[2];
+			// 	let nextPoint = lastPoint;
+			// 	extrusion += currentPoint.distanceTo(nextPoint)*iMat;
+			// 	partialGcode += `G1 X${x} Y${y} Z${z} E${approx.round(extrusion)} \n`
+			// }
+			return partialGcode
+		}
+
+		let addTransitionPointsToCIDEPGcode = function(points, firstPoint, transitionHeightStep){
 			let partialGcode = "";
 			let values = [];
 			var j = 0;
@@ -47,36 +96,49 @@ var router = {
 					let x = value[0], y = value[1], z = value[2];
 					partialGcode += `G1 X${x} Y${y} Z${z} \n`;
 				})
-			} else {
-				for(var i = 0; i < values.length-1; i++){
-					let currentPoint = points[i],
-						currentValue = values[i],
-						x = currentValue[0], 
-						y = currentValue[1], 
-						z = currentValue[2];
-					let nextPoint = points[i+1];
-					extrusion += currentPoint.distanceTo(nextPoint)*iMat;
-					partialGcode += `G1 X${x} Y${y} Z${z} E${approx.round(extrusion)} \n`
-				}
-			}
+			} 
 			return partialGcode
 		}
 		// First add the outerpoint gcode
-		var gcode = `G1 X${outerPoint.value[0]} Y${outerPoint.value[1]} Z${outerPoint.value[2]} \n`
+		var gcode = `G1 X${outerPoint.value[0]} Y${outerPoint.value[1]} Z${outerPoint.value[2]} \n`;
+		// var gcode += `G1 X${outerPoint.value[0]} Y${outerPoint.value[1]} Z${outerPoint.value[2]} \n`;
+
+		var	currentPlank = [],
+			firstPointOfNextPlank = {};
+
+
+		let firstPlank = planks[0];
+
+		var transitionPoints = [outerPoint]
+		// console.log("from scaffoldToCIDEPGcode")
+		// console.log(transitionPoints)
+
 		// Start adding planks and transitions but the last plank
 		for(var i = 0; i < planks.length-1; i++){
 			currentPlank = planks[i]
+			lastPointOfPastTransition = transitionPoints[transitionPoints.length-1]
+			// console.log("from for loop")
+			// console.log(lastPointOfPastTransition)
 			gcode += `\n; PLANK INDEX ${i} ${currentPlank.orientation} \n`;
 			let currentPlankPoints = currentPlank.value
-			gcode += addPointsToCIDEPGcode(currentPlankPoints) + `; -- transition starts -- \n`;
-			let transitionPoints = transitions[i]
-			gcode += addPointsToCIDEPGcode(transitionPoints, heightStep)
+			gcode += addPlankPointsToCIDEPGcode(currentPlankPoints, lastPointOfPastTransition) + `; -- transition starts -- \n`;
+			transitionPoints = transitions[i]
+			gcode += addTransitionPointsToCIDEPGcode(transitionPoints, firstPointOfNextPlank, heightStep)
 		}
 		// Add the last plank
 		currentPlank = planks[i]
+		lastPointOfPastTransition = transitionPoints[transitionPoints.length-1]
 		gcode += `\n; PLANK INDEX ${i} ${currentPlank.orientation} \n`;
 		let currentPlankPoints = currentPlank.value
-		gcode += addPointsToCIDEPGcode(currentPlankPoints);
+		gcode += addPlankPointsToCIDEPGcode(currentPlankPoints, lastPointOfPastTransition);
+
+		// currentPlank = planks[i]
+		// lastPointOfPastTransition = transitionPoints[transitionPoints.length-1]
+		// gcode += `\n; PLANK INDEX ${i} ${currentPlank.orientation} \n`;
+		// let currentPlankPoints = currentPlank.value
+		// gcode += addPlankPointsToCIDEPGcode(currentPlankPoints, lastPointOfPastTransition) + `; -- transition starts -- \n`;
+		// transitionPoints = transitions[i]
+		// gcode += addTransitionPointsToCIDEPGcode(transitionPoints, firstPointOfNextPlank, heightStep)
 
 		return gcode
 	}
@@ -85,76 +147,3 @@ var router = {
 
 module.exports = router;
 
-
-
-
-
-// scaffoldToCIDEPGcode: function(scaffold, speed){
-
-// // var scaffoldValue = scaffold.value
-// 		// scaffoldValue[0] = scaffoldValue[0].scale(2.12132)
-
-// 		const scaffoldValue = scaffold.value
-// 		const pointIn = scaffoldValue[0]
-// 		const pointInOfScaffold = scaffoldValue[1]
-// 		const flags = scaffold._flag
-// 		const heightStep = scaffold._heightStep
-
-// 		console.log("this are the scaffold's flags")
-// 		console.log(flags)
-		
-// 		var gcode = "";
-// 		var extrusion = 0;
-// 		var flagIndex = 0;
-// 		var lastZ = pointIn.value[2]
-// 		const iMat = 0.026
-// 		var noGcode = true;
-
-// 		// Add the first point of the gcode
-// 		gcode += `G1 X${pointIn.value[0]} Y${pointIn.value[1]} `			
-// 		if(pointIn.value[2]!==undefined){
-// 			gcode += `Z${pointIn.value[2]} `
-// 		}
-// 		gcode += "\n"
-
-// 		// Start extruding from the outerpoint
-// 		extrusion += pointIn.distanceTo(pointInOfScaffold)*iMat
-		
-// 		for(var i = 1; i < scaffoldValue.length; i++){
-
-// 			let currentPoint = scaffoldValue[i]
-// 			let	nextPoint = scaffoldValue[i+1]				
-// 			let currentPointValue = currentPoint.value
-// 			// gcode += String(i) + " " //tweak, erase later
-// 			gcode += `G1 X${currentPointValue[0]} Y${currentPointValue[1]} `			
-// 			if(currentPointValue[2]===lastZ){
-// 				gcode += `Z0 `
-// 			} else {
-// 				gcode += `Z${heightStep} `
-// 				lastZ = currentPointValue[2]
-// 			}
-// 			// if(flags[flagIndex] !== undefined) is a hack, fix later
-// 			if(flags[flagIndex] !== undefined){
-// 				if(i >= flags[flagIndex].startExtrusionIndex && i <= flags[flagIndex].stopExtrusionIndex){
-// 					if(currentPointValue[2] === lastZ){
-// 						extrusion += currentPoint.distanceTo(nextPoint)*iMat
-// 					}
-// 					if(i === flags[flagIndex].stopExtrusionIndex){
-// 						flagIndex++
-// 					}
-// 				} 
-// 				if(noGcode){
-// 					gcode += `E${extrusion} `
-// 					noGcode = false
-// 				}
-// 				if(currentPointValue[2] === nextPoint.value[2]){
-// 					noGcode = true
-// 				}
-// 			}
-// 			if(speed!==undefined){
-// 				gcode+= String(speed) + " "
-// 			}
-// 			gcode += "\n"
-// 		}
-// 		return gcode
-// 	}

@@ -16,6 +16,9 @@ router.get("/simulator", function(req, res){
     res.render("simulator")
 }); //router.get
 
+router.get("/simulator-test", function(req, res){
+    res.render("simulator-test")
+}); //router.get
 
 router.post("/fill", function(req, res){
 	let step = 0;
@@ -52,7 +55,8 @@ router.post("/fill", function(req, res){
 		}
 	}
 	res.send(JSON.stringify(output));
-	text.saveString(Gcode, "public/web/examples/current.gcode")
+	text.saveString(Gcode, "public/web/examples/current/normal.gcode")
+	text.saveString(CIDEPGcode, "public/web/examples/current/CIDEP.gcode")
 }); //router.post
 
 module.exports = router;

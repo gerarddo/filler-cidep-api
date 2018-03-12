@@ -21,6 +21,19 @@
       .dg.main {
         margin-top:40px;
       }
+      .toggle_gcode {
+        display: block;
+        height: 30px;
+        width: 100px;
+        margin-left: 100px;
+        position: absolute;
+
+      }
+      .navbar {
+        width: 100%;
+        height: 40px;
+        background-color: white;
+      }
     </style>
     <!-- 3rd party libs -->
     <script src="web/lib/modernizr.custom.93389.js"></script>
@@ -51,10 +64,22 @@
   </head>
   <body>
 
+This is a viewer for GCode files, which contain commands sent to a CNC machine such as a RepRap or MakerBot 3D printer.
 
+This viewer shows the operations the machine will take.
+
+Drag the mouse to rotate the model. Scroll with the mouse wheel to zoom. Right click and drag to pan.
+
+To view your own model, drag a gcode file from your desktop and drop it in this window.
+
+To learn more, read the blog posts.
+
+This code is based off of the original GCode Viewer by Joe Walnes.
 
     <!-- WebGL rendering area -->
     <div id="renderArea"></div>
+
+    <button class="toggle_gcode">TOGGLE</button>
 
 
 

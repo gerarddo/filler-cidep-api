@@ -44,7 +44,7 @@
 var config = {
   // lastImportedKey: 'last-imported',
   // notFirstVisitKey: 'not-first-visit',
-  FilePath: 'web/examples/current.gcode'
+  FilePath: 'web/examples/current/normal.gcode'
   // defaultFilePath: 'web/examples/test.gcode'
 }
 
@@ -154,6 +154,8 @@ $(function() {
 
 
 
+
+
   scene = createScene($('#renderArea')[0]);
 
 
@@ -163,12 +165,21 @@ $(function() {
   // } else {
   GCodeImporter.importPath(config.FilePath, onGCodeLoaded);
   // }
-  // $('.create_scaffold').on('click', function(event) {
-  //   // GCodeImporter.importPath(config.defaultFilePath, onGCodeLoaded);
-  //   var gcode = "G1 X0 Y0 Z0 \n G1 X1 Y1 Z2 \n"
-  //   GCodeImporter.importText(gcode, onGCodeLoaded);
-  //   // return false;
-  // })
+  $('.toggle_gcode').on('click', function(event) {
+
+    // web/examples/current/normal.gcode
+    if(config.defaultFilePath === "web/examples/current/normal.gcode") {
+      config.defaultFilePath = "web/examples/current/CIDEP.gcode"
+    } else {
+      config.defaultFilePath = "web/examples/current/normal.gcode"
+    }
+    
+    GCodeImporter.importPath(config.defaultFilePath, onGCodeLoaded);
+
+    // return false;
+  })
+
+
 
   
 });

@@ -29,7 +29,7 @@ function getCylinderPlanks(r, step, height, heightStep){
 
 	for(var i = 0; i < numOfPlanks; i++){
 
-		let currentCircle = new Circle(r, 10, currentHeight)
+		let currentCircle = new Circle(r, 3, currentHeight)
 	
 		let currentPlank = new Plank(currentCircle, step, orientation)
 		planks.push(currentPlank)
