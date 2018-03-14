@@ -134,7 +134,7 @@ function getVolumeOfScaffold(scaffold){
 		let currentPolygon = planks[0].associatedPolygon
 		volume += currentPolygon.area*scaffold.heightStep;
 	}
-	return volume
+	return approx.round(volume)
 }
 
 function getAreaOfScaffold(scaffold){
@@ -146,7 +146,7 @@ function getAreaOfScaffold(scaffold){
 	}
 	area += planks[0].associatedPolygon.area
 	area += planks[planks.length-1].associatedPolygon.area
-	return area
+	return approx.round(area)
 }
 
 

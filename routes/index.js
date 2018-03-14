@@ -51,7 +51,8 @@ router.post("/fill", function(req, res){
 		info: {
 			planks: newlyCreated._associatedPlanks.length,
 			area: newlyCreated._area,
-			volume: newlyCreated._volume
+			volume: newlyCreated._volume,
+			length: newlyCreated._length
 		}
 	}
 	res.send(JSON.stringify(output));
