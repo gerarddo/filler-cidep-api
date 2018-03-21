@@ -55,7 +55,7 @@ var router = {
 			extrusion += currentPoint.distanceTo(lastPoint)*iMat;
 			console.log( currentPoint.distanceTo(lastPoint))
 
-			partialGcode += `G1 X${x} Y${y} Z${z} E${approx.round(extrusion)} \n`			
+			partialGcode += `G1 X${x} Y${y} Z${z} E${approx.round(extrusion)} F4 \n` 	//ASDFASDFASDF
 
 
 			for(var i = 1; i < values.length; i++){
@@ -63,7 +63,7 @@ var router = {
 				x = currentValue[0], y = currentValue[1], z = currentValue[2];
 				lastPoint = points[i-1];
 				extrusion += currentPoint.distanceTo(lastPoint)*iMat;
-				partialGcode += `G1 X${x} Y${y} Z${z} E${approx.round(extrusion)} \n`
+				partialGcode += `G1 X${x} Y${y} Z${z} E${approx.round(extrusion)} F4 \n` //ASDFASDF
 			}
 
 			// if(lastPoint !== undefined){
@@ -94,13 +94,13 @@ var router = {
 				values[0][2] = transitionHeightStep
 				values.forEach((value) => {
 					let x = value[0], y = value[1], z = value[2];
-					partialGcode += `G1 X${x} Y${y} Z${z} \n`;
+					partialGcode += `G1 X${x} Y${y} Z${z} F4 \n`; //ASDFASDFASDF
 				})
 			} 
 			return partialGcode
 		}
 		// First add the outerpoint gcode
-		var gcode = `G1 X${outerPoint.value[0]} Y${outerPoint.value[1]} Z${outerPoint.value[2]} \n`;
+		var gcode = `G1 X${outerPoint.value[0]} Y${outerPoint.value[1]} Z${outerPoint.value[2]} F4 \n`; //ASDFASDFASDFAS
 		// var gcode += `G1 X${outerPoint.value[0]} Y${outerPoint.value[1]} Z${outerPoint.value[2]} \n`;
 
 		var	currentPlank = [],
