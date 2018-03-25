@@ -28,7 +28,7 @@ Make your http request to [http://localhost:3000](http://localhost:3000).
 ## Routes
 
 | Path | HTTP Verb | Purpose |
-| ------------- |:-------------:| -----:|
+|---|---|---|
 | / | GET | Show homepage |
 | /simulator | GET | Show simulator |
 | /fill | POST | Generate a Scaffold |
